@@ -20,9 +20,9 @@ app.get('/',(req,res)=>{
  app.use('/api/auth',userRoutes)
 
  app.use('/api/products',require('./routes/productRoutes'))
- app.use('/api/orders',require('./routes/orderRoutes'))
- api.use('/api/payment',require('./routes/paymentRoutes'))
- app.use('/api/analytics',require('./routes/analyticsRoutes'))
+//  app.use('/api/orders',require('./routes/orderRoutes'))
+//  api.use('/api/payment',require('./routes/paymentRoutes'))
+//  app.use('/api/analytics',require('./routes/analyticsRoutes'))
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,()=>{

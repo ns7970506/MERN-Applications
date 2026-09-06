@@ -13,9 +13,9 @@ const getProducts = async (req,res)=>{
 
 const getProductById = async (req,res)=>{
     try {
-        const product = await product.findById(req.params.id)
-        if (product){
-            res.json(product)
+        const foundProduct = await product.findById(req.params.id)
+        if (foundProduct){
+            res.json(foundProduct)
         }
         else{
             res.status(404).json({message:'Product not found'})
@@ -34,10 +34,12 @@ const createProduct = async (req,res)=>{
    
         if(req.file){
            const result = await cloudinary.uploader.upload(req.file.path) 
+           
+           
            imageUrl = result.secure_url
         }
 
-        const product = new product({
+        const newproduct = new product({
             name,
             description,
             price,
@@ -45,10 +47,57 @@ const createProduct = async (req,res)=>{
             stock,
             imageUrl
         });
-    const savedProduct = await product.save();
+    const savedProduct = await newproduct.save();
     res.status(201).json(savedProduct)
      }
         catch (error) {
+            console.log(error);
         res.status(500).json({message:'Internal server error'})
     }
 }
+
+
+const updateProduct = async (req,res)=>{
+    try {
+        const {name,description,price,category,stock} = req.body;
+        const foundProduct = await product.findById(req.params.id)
+        if(foundProduct){
+            foundProduct.name = name || foundProduct.name
+            foundProduct.description = description || foundProduct.description
+            foundProduct.price = price || foundProduct.price
+            foundProduct.category = category || foundProduct.category
+            foundProduct.stock = stock || foundProduct.stock
+            if(req.file){
+                const result = await cloudinary.uploader.upload(req.file.path)
+             console.log(result);
+             foundProduct.imageUrl = result.secure_url   
+        }
+        const updatedProduct = await foundProduct.save()
+        res.json(updatedProduct)
+    }
+    else{
+        res.status(404).json({message:'Product not found'})
+    }
+}
+catch (error) { 
+        res.status(500).json({message:'Internal server error'})
+}
+}
+
+
+const deleteProduct = async (req,res)=>{
+    try {
+        const foundProduct = await product.findById(req.params.id)
+        if( foundProduct){
+            await foundProduct.deleteOne()
+            res.json({message:'Product removed'})
+        }
+        else{
+            res.status(404).json({message:'Product not found'})
+        }
+    } catch (error) {
+        res.status(500).json({message:'Internal server error'})
+    }
+};
+
+module.exports = {getProducts,getProductById,createProduct,updateProduct,deleteProduct}
