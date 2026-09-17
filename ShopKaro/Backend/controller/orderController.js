@@ -44,7 +44,7 @@ const createOrder = async (req, res) => {
 
     const getOrders = async (req, res) => {
         try {
-            const orders = await Order.find({}).populate('userId', 'id name')
+            const orders = await Order.find({}).populate('user', 'id name')
             res.json(orders);
         } catch (error) {
             res.status(500).json({ message: "Order not found", error: error.message });
