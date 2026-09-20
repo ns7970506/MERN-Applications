@@ -21,9 +21,7 @@ const Home = () => {
       };
       fetchProduct();
     },[]);
-    
-    
-
+      
   return (
     <div className='home-container'>
       <div className='hero-banner'>
