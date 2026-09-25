@@ -3,7 +3,17 @@ const {protect} = require('../middleware/authMiddleware')
 const {admin} = require('../middleware/adminMiddleware')
 const {getProducts,getProductById,createProduct,updateProduct,deleteProduct} = require('../controller/productController')
 const multer = require('multer')
-const upload = multer({ dest: 'uploads/' }) // Specify the destination folder for uploaded files
+const path = require('path')
+
+// Use an absolute path so uploads work no matter which directory starts Node.
+const upload = multer({
+    dest: path.join(__dirname, '../uploads'),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, callback) => {
+        if (file.mimetype.startsWith('image/')) return callback(null, true)
+        callback(new Error('Only image files are allowed'))
+    }
+})
 
 const router = express.Router()
 

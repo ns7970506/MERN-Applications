@@ -1,5 +1,20 @@
 const product = require('../model/Product')
 const cloudinary = require('../config/cloudinary')
+const fs = require('fs/promises')
+
+const uploadImage = async (file) => {
+    if (!file) throw new Error('Product image is required')
+
+    try {
+        const result = await cloudinary.uploader.upload(file.path, {
+            resource_type: 'image'
+        })
+        return result.secure_url
+    } finally {
+        // The image is stored in Cloudinary now; do not keep local temp files.
+        await fs.unlink(file.path).catch(() => {})
+    }
+}
 
 const getProducts = async (req,res)=>{
     try {
@@ -33,10 +48,7 @@ const createProduct = async (req,res)=>{
     let imageUrl = '';
    
         if(req.file){
-           const result = await cloudinary.uploader.upload(req.file.path) 
-           
-           
-           imageUrl = result.secure_url
+           imageUrl = await uploadImage(req.file)
         }
 
         const newproduct = new product({
@@ -51,7 +63,7 @@ const createProduct = async (req,res)=>{
     res.status(201).json(savedProduct)
      }
         catch (error) {
-            console.log(error);
+            console.error('Create product failed:', error.message);
         res.status(500).json({message:'Internal server error'})
     }
 }
@@ -68,9 +80,7 @@ const updateProduct = async (req,res)=>{
             foundProduct.category = category || foundProduct.category
             foundProduct.stock = stock || foundProduct.stock
             if(req.file){
-                const result = await cloudinary.uploader.upload(req.file.path)
-             console.log(result);
-             foundProduct.imageUrl = result.secure_url   
+             foundProduct.imageUrl = await uploadImage(req.file)
         }
         const updatedProduct = await foundProduct.save()
         res.json(updatedProduct)

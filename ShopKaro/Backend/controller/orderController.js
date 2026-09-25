@@ -34,7 +34,9 @@ const createOrder = async (req, res) => {
 
     const myorders = async (req, res) => {
         try {
-            const orders = await Order.find({user:req.user_id}).populate('items.productId', 'name price');
+            const orders = await Order.find({ user: req.user._id })
+                .populate('items.productId', 'name price')
+                .sort({ createdAt: -1 });
             res.json(orders);
         } catch (error) {
             res.status(500).json({ message: "Order not found", error: error.message });
@@ -53,7 +55,11 @@ const createOrder = async (req, res) => {
 
     const updateOrderStatus = async (req, res) => {
         try {
-            const { status } = req.body;
+            const status = String(req.body.status || '').toLowerCase();
+            const validStatuses = ['pending', 'processing', 'shipped', 'delivered'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({ message: 'Invalid order status' });
+            }
             const order = await Order.findById(req.params.id);
             if (order){
                 order.status = status;

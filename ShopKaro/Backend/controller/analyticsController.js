@@ -8,9 +8,13 @@ const product = require("../model/Product");
             const totalOrders = await order.countDocuments({});
             const totalProducts = await product.countDocuments({});
 
-            const orders = await order.find({user: req.user._id})
-            
-            const totalRevenueData =  orders.reduce((acc, order) => acc + order.totalPrice, 0);
+            // Order documents store revenue in `totalAmount`, not `totalPrice`.
+            // Coercing invalid legacy values to zero keeps the API numeric.
+            const orders = await order.find({});
+            const totalRevenueData = orders.reduce(
+                (total, currentOrder) => total + (Number(currentOrder.totalAmount) || 0),
+                0
+            );
 
             res.json({
                 totalUsers,
