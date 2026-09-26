@@ -39,6 +39,16 @@ ShopKaro is a full-stack e-commerce web application built using the MERN stack. 
 - Manage product information
 - Manage users
 
+  ## 🔐 Demo Admin Credentials
+
+Use the following credentials to access the Admin Dashboard:
+
+**Email:** `admin@ShopKaro.demo`
+**Password:** `Password@123`
+
+> ⚠️ These credentials are for demo/testing purposes only. Do not use these credentials for a real production account.
+
+
 ### ☁️ Media & Payment
 
 - Razorpay payment integration
